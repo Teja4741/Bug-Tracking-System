@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+
+  <meta charset="UTF-8" />
+  <title>Team Lead Login</title>
+
+  <link rel="stylesheet" href="style.css" />
+
+</head>
+
+
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="logo" height="60px" width="70px" />
+      </div>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="register.html">Registration</a></li>
+        <li><a href="developer.html">Developer</a></li>
+        <li><a href="manager.html">Manager</a></li>
+        <li><a href="teamlead.html" class="active">TeamLead</a></li>
+        <li><a href="staff.html">Staff</a></li>
+        <li><a href="history.html">History</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="form-container">
+      <h2>Team Lead Login</h2>
+      <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="loginUsername" name="Username" required />
+        <label for="password">Password:</label>
+        <input type="password" id="loginPassword" name="Password" required />
+        <button type="submit">Login</button>
+      </form>
+    </section>
+  </main>
+
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password, role: 'teamlead' })
+        });
+
+        const data = await res.json();
+
+        console.log('Login response role:', data.user.role);  // Debug log
+
+        if (res.ok && data.success && data.user.role === 'teamlead') {
+          // *** This is the line that was missing and needs to be added ***
+          localStorage.setItem('loggedInUsername', data.user.username); // Store the logged-in Team Lead's username
+          window.location.href = 'assign_bug.html';
+        } else {
+          alert(data.message || 'Access denied. Only Team Leads are allowed.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Login failed. Please try again.');
+      }
+    });
+  </script>
+</body>
+
+</html>

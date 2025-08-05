@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="image" height="60px" width="70px">
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="register.html">Registration</a></li>
+                <li><a href="login.html" class="active">Login</a></li>
+                <li><a href="TeamLead.html">TeamLead</a></li>
+                <li><a href="developer.html">Developer</a></li>
+                <li><a href="manager.html">Manager</a></li>
+                <li><a href="staff.html">Staff</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="form-container">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Username" required />
+                <input type="password" id="password" placeholder="Password" required />
+                <button type="submit">Login</button>
+            </form>
+            <p id="loginError" style="color: red;"></p>
+            <p><button id="commonLogoutBtn" type="button">Logout</button></p> 
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const loginError = document.getElementById('loginError');
+            const commonLogoutBtn = document.getElementById('commonLogoutBtn'); // Get the logout button
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value.trim();
+
+                try {
+                    const res = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password }) // Do not send role here, let backend determine
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+                        alert(`Welcome ${data.user.username} (${data.user.role})!`);
+
+                        // ✅ Store the entire user object in localStorage for consistency
+                        localStorage.setItem('loggedInUser', JSON.stringify(data.user));
+
+                        // ✅ Redirect based on role
+                        if (data.user.role === 'developer') {
+                            window.location.href = 'developer.html';
+                        } else if (data.user.role === 'manager') {
+                            window.location.href = 'manager.html';
+                        } else if (data.user.role === 'teamlead') {
+                            window.location.href = 'TeamLead.html';
+                        } else if (data.user.role === 'staff') { // Assuming 'staff' is another role
+                             window.location.href = 'staff.html';
+                        } else {
+                            // Fallback or error if role is not recognized
+                            loginError.textContent = 'Unauthorized role. Please contact support.';
+                            localStorage.removeItem('loggedInUser'); // Clear invalid login
+                        }
+                    } else {
+                        loginError.textContent = data.message || 'Invalid username or password.';
+                    }
+                } catch (err) {
+                    console.error('Login failed:', err);
+                    loginError.textContent = 'Login failed. Please try again (network error).';
+                }
+            });
+
+            // Universal Logout button listener for this page
+            commonLogoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('loggedInUser'); // Clear the shared login state
+                alert('Logged out successfully.');
+                window.location.href = 'login.html'; // Redirect to login page after logout
+            });
+
+            // Optional: If a user is already logged in, show a message.
+            // This part is for user experience, not essential for login/logout logic.
+            const storedUser = localStorage.getItem('loggedInUser');
+            if (storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    loginError.textContent = `You are already logged in as ${user.username} (${user.role}).`;
+                    // You might want to automatically redirect them to their dashboard here
+                    // based on their role, or offer a button to go there.
+                } catch (e) {
+                    console.error('Error parsing stored user:', e);
+                    localStorage.removeItem('loggedInUser'); // Clear corrupted data
+                }
+            }
+        });
+    </script>
+</body>
+</html>

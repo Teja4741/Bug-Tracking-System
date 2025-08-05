@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Developer Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* General styling for the dashboard container */
+        #dashboardContainer {
+            padding: 20px;
+            max-width: 1200px;
+            /* Max width for better readability on large screens */
+            margin: 20px auto;
+            /* Center the container */
+            background-color: rgba(255, 255, 255, 0.05);
+            /* Slightly lighter background for dashboard */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        #dashboardContainer h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #5bc0de;
+            font-size: 2em;
+        }
+
+        #logoutBtn {
+            float: right;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #d9534f;
+            /* Red for logout */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #logoutBtn:hover {
+            background-color: #c9302c;
+        }
+
+        /* Styling for the individual bug cards */
+        .bug-card {
+            background-color: rgba(255, 255, 255, 0.08);
+            /* Darker background for each card */
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            /* More space between cards */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            /* Use flexbox for layout within the card */
+            flex-wrap: wrap;
+            /* Allow items to wrap on smaller screens */
+            gap: 20px;
+            /* Space between flex items */
+        }
+
+        .bug-card h3 {
+            width: 100%;
+            /* Title takes full width */
+            color: #5bc0de;
+            /* Highlight title */
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.6em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Group for labels and content (e.g., Description, Language) */
+        .bug-detail-group {
+            display: flex;
+            flex-direction: column;
+            /* Stack label and value vertically */
+            flex: 1 1 calc(50% - 10px);
+            /* Two columns, allowing wrap */
+            min-width: 280px;
+            /* Minimum width for details */
+            padding-right: 15px;
+            /* Space from right side */
+        }
+
+        .bug-detail-group:last-of-type {
+            padding-right: 0;
+            /* No padding on the last item */
+        }
+
+        .bug-detail-group p {
+            margin: 5px 0;
+            /* Adjust spacing */
+            color: #e0e0e0;
+            /* Lighter text for details */
+            font-size: 0.95em;
+        }
+
+        .bug-detail-group strong {
+            color: #f0f0f0;
+            /* Slightly brighter for labels */
+            display: inline-block;
+            /* Make strong a block to align */
+            min-width: 100px;
+            /* Ensure labels have some space */
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        /* Styling for image within bug card */
+        .bug-card img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: block;
+            /* Ensures image takes its own line */
+            width: 100%;
+            /* Take full width within its flex container */
+        }
+
+        /* Solution/Keypoints/Feedback sections */
+        .solution-section {
+            width: 100%;
+            /* These sections take full width */
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .solution-section label {
+            font-weight: bold;
+            color: #f0f0f0;
+            margin-bottom: 5px;
+            display: block;
+            /* Make label a block for proper spacing */
+        }
+
+        .solution-section textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #333;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 0.95em;
+            resize: vertical;
+            /* Allow vertical resizing */
+        }
+
+        .solution-section button {
+            padding: 12px 25px;
+            background-color: #28a745;
+            /* Green for submit */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+            /* Align button to start within its flex container */
+        }
+
+        .solution-section button:hover {
+            background-color: #218838;
+        }
+
+        /* Horizontal rule for separation */
+        .bug-card hr {
+            border: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+            width: 100%;
+            /* Take full width */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .bug-detail-group {
+                flex: 1 1 100%;
+                /* Stack details vertically on smaller screens */
+                padding-right: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="image" height="60px" width="70px">
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="register.html">Registration</a></li>
+                <li><a href="developer.html" class="active">Developer</a></li>
+                <li><a href="manager.html">Manager</a></li>
+                <li><a href="TeamLead.html">TeamLead</a></li>
+                <li><a href="staff.html">Staff</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="form-container" id="loginContainer">
+        <h2>Developer Login</h2>
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required />
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
+            <label for="domain">Domain:</label>
+            <select id="domain" name="domain" required>
+                <option value="">Select domain</option>
+                <option value="java">Java</option>
+                <option value="c">C</option>
+                <option value="cpp">C++</option>
+                <option value="javascript">JavaScript</option>
+                <option value="backend">Backend</option>
+            </select><br /><br />
+            <button type="submit">Login</button>
+        </form>
+        <p id="loginError" style="color: red;"></p>
+    </div>
+
+    <div class="form-container" id="dashboardContainer" style="display:none;">
+        <button id="logoutBtn">Logout</button>
+        <h2>Assigned Bugs for <span id="developerUsernameDisplay">Developer</span></h2>
+        <div id="bugsContainer"></div>
+    </div>
+
+    <script>
+        const loginContainer = document.getElementById('loginContainer');
+        const dashboardContainer = document.getElementById('dashboardContainer');
+        const developerUsernameDisplay = document.getElementById('developerUsernameDisplay');
+
+        // Function to check authentication and show dashboard or login
+        function checkAuthAndShowDashboard() {
+            const storedDeveloper = localStorage.getItem('loggedInDeveloper');
+            if (storedDeveloper) {
+                try {
+                    const developer = JSON.parse(storedDeveloper);
+                    loginContainer.style.display = 'none';
+                    dashboardContainer.style.display = 'block';
+                    developerUsernameDisplay.textContent = developer.username;
+                    fetchAssignedBugs();
+                } catch (e) {
+                    console.error('Error parsing stored developer data:', e);
+                    localStorage.removeItem('loggedInDeveloper');
+                    loginContainer.style.display = 'block';
+                    dashboardContainer.style.display = 'none';
+                }
+            } else {
+                loginContainer.style.display = 'block';
+                dashboardContainer.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthAndShowDashboard);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const domain = document.getElementById('domain').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role: 'developer', domain })
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success && data.user && data.user.role === 'developer') {
+                    localStorage.setItem('loggedInDeveloper', JSON.stringify(data.user));
+                    checkAuthAndShowDashboard();
+                } else {
+                    document.getElementById('loginError').textContent = data.message || 'Invalid credentials or not a developer account for this domain.';
+                }
+            } catch (err) {
+                console.error('Login failed:', err);
+                document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInDeveloper');
+            alert('Logged out from Developer Dashboard.');
+            loginContainer.style.display = 'block';
+            dashboardContainer.style.display = 'none';
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').textContent = '';
+        });
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const domain = document.getElementById('domain').value; // Get domain from the form
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    // Make sure you send the 'domain' in the login request if it's relevant for developer login validation on the backend
+                    body: JSON.stringify({ username, password, role: 'developer', domain })
+                });
+                const data = await res.json();
+
+                // Check for success: `data.success` AND `data.user` AND correct role
+                if (res.ok && data.success && data.user && data.user.role.toLowerCase() === 'developer') {
+                    // Store the entire user object including username, role, and domain
+                    localStorage.setItem('loggedInDeveloper', JSON.stringify(data.user));
+                    checkAuthAndShowDashboard();
+                    document.getElementById('loginError').textContent = ''; // Clear any previous errors
+                } else {
+                    document.getElementById('loginError').textContent = data.message || 'Invalid credentials or not a developer account.';
+                }
+            } catch (err) {
+                console.error('Login failed:', err);
+                document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+            }
+        });
+        async function fetchAssignedBugs() {
+            const developer = JSON.parse(localStorage.getItem('loggedInDeveloper'));
+            if (!developer) {
+                console.warn('Developer not logged in.');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/bugs/assigned/${developer.username}`);
+                const bugs = await res.json();
+                const container = document.getElementById('bugsContainer');
+                container.innerHTML = '';
+
+                if (!bugs.length) {
+                    container.innerHTML = '<p style="text-align: center; color: #ccc;">No bugs assigned to you.</p>';
+                    return;
+                }
+
+                bugs.forEach(bug => {
+                    const createdDate = new Date(bug.createdAt).toLocaleString();
+                    const bugCard = document.createElement('div');
+                    bugCard.classList.add('bug-card');
+                    bugCard.innerHTML = `
+                        <h3>${bug.title}</h3>
+                        <div class="bug-details">
+                            <div class="bug-detail-group">
+                                <p><strong>Description:</strong> ${bug.description}</p>
+                            </div>
+                            <div class="bug-detail-group">
+                                <p><strong>Language:</strong> ${bug.language}</p>
+                            </div>
+                            <div class="bug-detail-group">
+                                <p><strong>Assigned By:</strong> ${bug.createdBy}</p>
+                            </div>
+                            <div class="bug-detail-group">
+                                <p><strong>Assigned To:</strong> ${bug.assignedTo}</p>
+                            </div>
+                            <div class="bug-detail-group">
+                                <p><strong>Date:</strong> ${createdDate}</p>
+                            </div>
+                        </div>
+                        ${bug.imageUrl ? `<img src="${bug.imageUrl}" alt="Bug Screenshot" />` : ''}
+                        <div class="solution-section">
+                            <label for="solution-${bug._id}">Solution Code:</label>
+                            <textarea rows="8" placeholder="Enter your solution here..." id="solution-${bug._id}">${bug.solutionCode || ''}</textarea>
+                            <label for="keypoints-${bug._id}">Key Points/Notes:</label>
+                            <textarea rows="3" placeholder="Enter key points or notes..." id="keypoints-${bug._id}">${bug.keyPoints || ''}</textarea>
+                            <label for="feedback-${bug._id}">Feedback (if any):</label>
+                            <textarea rows="3" placeholder="Enter feedback (if any)..." id="feedback-${bug._id}">${bug.feedback || ''}</textarea>
+                            <button onclick="submitSolution('${bug._id}')">Submit Solution</button>
+                        </div>
+                        <hr>
+                    `;
+                    container.appendChild(bugCard);
+                });
+            } catch (err) {
+                console.error('Failed to fetch bugs:', err);
+                container.innerHTML = '<p style="text-align: center; color: red;">Failed to load bugs. Please try again.</p>';
+            }
+        }
+
+        async function submitSolution(bugId) {
+            const solutionText = document.getElementById(`solution-${bugId}`).value;
+            const keypoints = document.getElementById(`keypoints-${bugId}`).value;
+            const feedback = document.getElementById(`feedback-${bugId}`).value;
+            try {
+                const res = await fetch(`/api/bugs/solution/${bugId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        solutionCode: solutionText,
+                        keyPoints: keypoints,
+                        feedback: feedback,
+                        status: 'resolved'
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Solution submitted!');
+                    fetchAssignedBugs(); // Refresh bug list
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Failed to submit solution');
+                }
+            } catch (err) {
+                console.error('Submit error:', err);
+                alert('An error occurred while submitting the solution.');
+            }
+        }
+    </script>
+</body>
+
+</html>

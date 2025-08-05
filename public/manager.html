@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        /* Extra spacing between each section/table */
+        .manager-section {
+            margin-bottom: 3rem;
+        }
+        /* Adjust login form size similar to developer login */
+        #loginSection {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.3);
+        }
+        #loginSection h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        #loginSection form label {
+            font-size: 1rem;
+            text-align: left;
+            display: block;
+        }
+        #loginSection form input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            text-align: left;
+        }
+        #loginSection form button {
+            width: 100%;
+            padding: 10px;
+            font-size: 1.1rem;
+            background-color: #5bc0de;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #loginSection form button:hover {
+            background-color: #4a9ecf; /* Darker blue on hover */
+        }
+
+        /* Styling for table captions */
+        .manager-table caption {
+            font-size: 1.2em; /* Slightly larger text */
+            font-weight: bold;
+            margin-bottom: 10px; /* Space below caption */
+            color: #5bc0de; /* Match theme color */
+            text-align: left; /* Align caption to the left */
+            padding-bottom: 5px; /* Padding below text */
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle line */
+            margin-top: 20px; /* Space above caption */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="Logo" height="60px" width="70px" />
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="register.html">Registration</a></li>
+                <li><a href="developer.html">Developer</a></li>
+                <li><a href="manager.html" class="active">Manager</a></li>
+                <li><a href="TeamLead.html">TeamLead</a></li>
+                <li><a href="staff.html">Staff</a></li>
+                <li><a href="history.html">History</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="welcome" id="loginSection">
+            <h2>Manager Login</h2>
+            <form id="loginForm">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required />
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+                <button type="submit">Login</button>
+            </form>
+            <p id="loginError" style="color: red;"></p>
+        </section>
+
+        <section class="manager-container manager-section" id="dashboardSection" style="display:none;">
+            <button id="logoutBtn" style="float: right; margin-bottom: 10px;">Logout</button>
+            <h1>Manager Dashboard</h1>
+            <p>Welcome, <span id="managerUsernameDisplay">Manager</span>!</p>
+            <p>View all team leads, developers, and assigned bugs with status.</p>
+
+            <section>
+                <h2>Team Leads</h2>
+                <button id="deleteAllStaffBtn" style="margin-bottom: 10px; background-color: #d9534f; color: white; border: none; padding: 8px 12px; cursor: pointer;">Delete All Staff</button>
+                <table class="manager-table">
+                    <caption>Current Team Leads Information</caption>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Age</th>
+                            <th>Experience</th>
+                            <th>Bugs Assigned</th> </tr>
+                    </thead>
+                    <tbody id="teamLeadTableBody"></tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Developers</h2>
+                <table class="manager-table">
+                    <caption>Current Developers Information</caption>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Age</th>
+                            <th>Experience</th>
+                            <th>Domain</th>
+                            <th>Bugs Assigned</th> 
+                            <th>Bugs Solved</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="developerTableBody"></tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>Assigned Bugs</h2>
+                <button id="deleteAllBugsBtn" style="margin-bottom: 10px; background-color: #d9534f; color: white; border: none; padding: 8px 12px; cursor: pointer;">Delete All Bugs</button>
+                <table class="manager-table">
+                    <caption>Overview of All Assigned Bugs</caption>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Assigned Developer</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bugTableBody"></tbody>
+                </table>
+            </section>
+        </section>
+    </main>
+
+    <script>
+        const loginSection = document.getElementById('loginSection');
+        const dashboardSection = document.getElementById('dashboardSection');
+        const managerUsernameDisplay = document.getElementById('managerUsernameDisplay');
+
+        // Function to check authentication and show dashboard or login
+        function checkAuthAndShowDashboard() {
+            const storedManager = localStorage.getItem('loggedInManager');
+            if (storedManager) {
+                try {
+                    const manager = JSON.parse(storedManager);
+                    loginSection.style.display = 'none';
+                    dashboardSection.style.display = 'block';
+                    managerUsernameDisplay.textContent = manager.username; // Display manager's username
+                    fetchTeamLeads(); // This will now call the CORRECTED function below
+                    fetchDevelopers();
+                    fetchBugs();
+                } catch (e) {
+                    console.error('Error parsing stored manager data:', e);
+                    localStorage.removeItem('loggedInManager'); // Clear corrupted data
+                    loginSection.style.display = 'block';
+                    dashboardSection.style.display = 'none';
+                }
+            } else {
+                loginSection.style.display = 'block';
+                dashboardSection.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', checkAuthAndShowDashboard);
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password, role: 'manager' }) // Include role in login request
+                });
+                const data = await res.json();
+
+                if (res.ok && data.success && data.user && data.user.role === 'manager') {
+                    localStorage.setItem('loggedInManager', JSON.stringify(data.user));
+                    checkAuthAndShowDashboard();
+                } else {
+                    document.getElementById('loginError').textContent = data.message || 'Invalid username or password, or not a manager account.';
+                }
+            } catch (err) {
+                console.error('Login failed:', err);
+                document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInManager');
+            alert('Logged out from Manager Dashboard.');
+            loginSection.style.display = 'block';
+            dashboardSection.style.display = 'none';
+            document.getElementById('loginForm').reset();
+            document.getElementById('loginError').textContent = '';
+        });
+
+        // UPDATED: fetchTeamLeads function to use the new endpoint and display stats
+        async function fetchTeamLeads() {
+            try {
+                // *** IMPORTANT CHANGE HERE: Calling the new endpoint ***
+                const res = await fetch('/api/teamleads-with-stats');
+                if (!res.ok) { // Basic error handling for non-2xx responses
+                    const errorData = await res.json();
+                    throw new Error(errorData.message || 'Failed to fetch team leads with stats');
+                }
+                const data = await res.json(); // This 'data' will now contain bugsAssignedCount
+
+                const tbody = document.getElementById('teamLeadTableBody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                if (data.length === 0) {
+                    // Updated colspan to 6 for the new 'Bugs Assigned' column
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No Team Leads found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(member => {
+                    const row = `
+                        <tr>
+                            <td>${member.username}</td>
+                            <td>${member.email}</td>
+                            <td>${member.phone}</td>
+                            <td>${member.age}</td>
+                            <td>${member.experience}</td>
+                            <td>${member.bugsAssignedCount || 0}</td> </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (err) {
+                console.error('Error fetching team leads:', err);
+                const tbody = document.getElementById('teamLeadTableBody');
+                // Updated colspan to 6 for the new 'Bugs Assigned' column
+                tbody.innerHTML = `<tr><td colspan="6" style="color: red; text-align: center;">Error loading team leads: ${err.message || 'Unknown error'}</td></tr>`;
+            }
+        }
+
+        // UPDATED fetchDevelopers function to use the new endpoint and display stats
+        async function fetchDevelopers() {
+            try {
+                const res = await fetch('/api/developers-with-stats');
+                if (!res.ok) { // Basic error handling for non-2xx responses
+                    const errorData = await res.json();
+                    throw new Error(errorData.message || 'Failed to fetch developers with stats');
+                }
+                const data = await res.json(); // This 'data' will now contain assignedBugsCount and solvedBugsCount
+
+                const tbody = document.getElementById('developerTableBody');
+                tbody.innerHTML = ''; // Clear existing rows
+
+                if (data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No Developers found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(member => {
+                    const row = `
+                        <tr>
+                            <td>${member.username}</td>
+                            <td>${member.email}</td>
+                            <td>${member.phone}</td>
+                            <td>${member.age}</td>
+                            <td>${member.experience}</td>
+                            <td>${member.domain || 'N/A'}</td>
+                            <td>${member.assignedBugsCount || 0}</td>
+                            <td>${member.solvedBugsCount || 0}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } catch (err) {
+                console.error('Error fetching developers:', err);
+                const tbody = document.getElementById('developerTableBody');
+                tbody.innerHTML = `<tr><td colspan="8" style="color: red; text-align: center;">Error loading developers: ${err.message || 'Unknown error'}</td></tr>`;
+            }
+        }
+
+        function fetchBugs() {
+            fetch('/api/bugs')
+                .then(res => {
+                    if (!res.ok) { // Basic error handling for non-2xx responses
+                        return res.json().then(err => Promise.reject(err.message || 'Failed to fetch bugs'));
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    const tbody = document.getElementById('bugTableBody');
+                    tbody.innerHTML = '';
+                    if (data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No Bugs assigned yet.</td></tr>';
+                        return;
+                    }
+                    data.forEach(bug => {
+                        const row = `
+                            <tr>
+                                <td>${bug.title}</td>
+                                <td>${bug.description}</td>
+                                <td>${bug.status}</td>
+                                <td>${bug.assignedTo || 'Unassigned'}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                })
+                .catch(err => {
+                    console.error('Error fetching bugs:', err);
+                    const tbody = document.getElementById('bugTableBody');
+                    tbody.innerHTML = `<tr><td colspan="4" style="color: red; text-align: center;">Error loading bugs: ${err}</td></tr>`;
+                });
+        }
+
+        document.getElementById('deleteAllStaffBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all staff members? This action cannot be undone.')) {
+                fetch('/api/staff', { method: 'DELETE' })
+                    .then(res => {
+                        if (!res.ok) {
+                            return res.json().then(err => Promise.reject(err.message || 'Failed to delete staff members'));
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        fetchTeamLeads(); // Re-fetch team leads to update counts after deletion
+                        fetchDevelopers(); // Re-fetch developers to update counts after deletion
+                    })
+                    .catch(err => alert('Failed to delete staff members: ' + err));
+            }
+        });
+
+        document.getElementById('deleteAllBugsBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all bugs? This action cannot be undone.')) {
+                fetch('/api/bugs', { method: 'DELETE' })
+                    .then(res => {
+                        if (!res.ok) {
+                            return res.json().then(err => Promise.reject(err.message || 'Failed to delete bugs'));
+                        }
+                        return res.json();
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        fetchBugs();
+                        fetchDevelopers(); // Re-fetch developers to update counts after deletion
+                        fetchTeamLeads(); // Re-fetch team leads to update counts after deletion
+                    })
+                    .catch(err => alert('Failed to delete bugs: ' + err));
+            }
+        });
+    </script>
+    <script src="nav.js"></script>
+</body>
+</html>

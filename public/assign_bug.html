@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Assign Bug - Team Lead</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">
+        <img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="logo" height="60px" width="70px" />
+      </div>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="register.html">Registration</a></li>
+        <li><a href="developer.html">Developer</a></li>
+        <li><a href="manager.html">Manager</a></li>
+        <li><a href="teamlead.html" class="active">TeamLead</a></li>
+        <li><a href="staff.html">Staff</a></li>
+        <li><a href="history.html">History</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="form-container">
+    <h2>Assign Bug</h2>
+    <form id="bugForm" enctype="multipart/form-data">
+      <input type="text" id="title" placeholder="Bug Title" required />
+      <textarea id="description" placeholder="Describe the bug" required></textarea>
+      <select id="language" required>
+        <option value="">Select Language</option>
+        <option value="java">Java</option>
+        <option value="c">C</option>
+        <option value="cpp">C++</option>
+        <option value="javascript">JavaScript / Frontend</option>
+        <option value="backend">Backend</option>
+      </select>
+      <input type="text" id="assignedTo" placeholder="Assign to (Developer Username)" required />
+      <label for="bugImage">Upload Image (optional):</label>
+      <input type="file" id="bugImage" accept="image/*" />
+      <button type="submit">Assign Bug</button>
+    </form>
+  </div>
+
+  <script>
+    const bugForm = document.getElementById('bugForm');
+
+    bugForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const language = document.getElementById('language').value;
+      const assignedTo = document.getElementById('assignedTo').value;
+      const bugImage = document.getElementById('bugImage').files[0];
+      const createdBy = localStorage.getItem('loggedInUsername') || 'teamlead'; // fallback
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('description', description);
+      formData.append('language', language);
+      formData.append('assignedTo', assignedTo);
+      formData.append('createdBy', createdBy);
+      if (bugImage) {
+        formData.append('image', bugImage);
+      }
+
+      try {
+        const res = await fetch('/api/bugs', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (res.ok) {
+          alert('Bug assigned successfully!');
+          bugForm.reset();
+        } else {
+          const data = await res.json();
+          alert(data.message || 'Failed to assign bug.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error assigning bug.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Register</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <div class="logo"><img src="9a25d31c-1a9f-44d6-a082-5a7d166e5ee6.png" alt="image" height="60px" width="70px"></div>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="register.html" class="active">Registration</a></li>
+          <li><a href="developer.html">Developer</a></li>
+          <li><a href="manager.html">Manager</a></li>
+          <li><a href="TeamLead.html">TeamLead</a></li>
+          <li><a href="staff.html">Staff</a></li>
+          <li><a href="history.html">History</a></li>
+        </ul>
+      </nav>
+    </header>
+
+  <main>
+    <section class="form-container">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="text" id="username" placeholder="Username" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <input type="text" id="phone" placeholder="Phone Number" required />
+        <input type="number" id="age" placeholder="Age" required />
+        <input type="number" id="experience" placeholder="Work Experience (years)" required />
+
+        <select id="role" required>
+          <option value="">Select Role</option>
+          <option value="manager">Manager</option>
+          <option value="developer">Developer</option>
+          <option value="teamlead">TeamLead</option>
+        </select>
+
+        <select id="domain" class="hidden" required>
+          <option value="">Select Expertise Domain</option>
+          <option value="java">Java</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+          <option value="javascript">JavaScript / Frontend</option>
+          <option value="backend">Backend</option>
+        </select>
+
+        <button type="submit">Register</button>
+      </form>
+      <p><a href="staff.html">View Staff List</a></p>
+    </section>
+  </main>
+
+  <script>
+    const roleSelect = document.getElementById('role');
+    const domainSelect = document.getElementById('domain');
+
+    roleSelect.addEventListener('change', () => {
+      if (roleSelect.value === 'developer') {
+        domainSelect.classList.remove('hidden');
+        domainSelect.required = true;
+      } else {
+        domainSelect.classList.add('hidden');
+        domainSelect.required = false;
+        domainSelect.value = '';
+      }
+    });
+
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        username: document.getElementById('username').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
+        phone: document.getElementById('phone').value,
+        age: parseInt(document.getElementById('age').value, 10),
+        experience: parseInt(document.getElementById('experience').value, 10),
+        role: roleSelect.value,
+        domain: roleSelect.value === 'developer' ? domainSelect.value : null
+      };
+
+      try {
+        const res = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert('User registered successfully.');
+          window.location.href = 'staff.html';
+        } else {
+          alert(data.message || 'Registration failed.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Something went wrong. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
