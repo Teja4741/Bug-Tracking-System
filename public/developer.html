@@ -6,15 +6,11 @@
     <title>Developer Dashboard</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-        /* General styling for the dashboard container */
         #dashboardContainer {
             padding: 20px;
             max-width: 1200px;
-            /* Max width for better readability on large screens */
             margin: 20px auto;
-            /* Center the container */
             background-color: rgba(255, 255, 255, 0.05);
-            /* Slightly lighter background for dashboard */
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -31,7 +27,6 @@
             margin-bottom: 20px;
             padding: 10px 20px;
             background-color: #d9534f;
-            /* Red for logout */
             color: white;
             border: none;
             border-radius: 5px;
@@ -42,30 +37,21 @@
         #logoutBtn:hover {
             background-color: #c9302c;
         }
-
-        /* Styling for the individual bug cards */
         .bug-card {
             background-color: rgba(255, 255, 255, 0.08);
-            /* Darker background for each card */
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 8px;
             padding: 25px;
             margin-bottom: 30px;
-            /* More space between cards */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
-            /* Use flexbox for layout within the card */
             flex-wrap: wrap;
-            /* Allow items to wrap on smaller screens */
             gap: 20px;
-            /* Space between flex items */
         }
 
         .bug-card h3 {
             width: 100%;
-            /* Title takes full width */
             color: #5bc0de;
-            /* Highlight title */
             margin-top: 0;
             margin-bottom: 15px;
             font-size: 1.6em;
@@ -73,44 +59,32 @@
             padding-bottom: 10px;
         }
 
-        /* Group for labels and content (e.g., Description, Language) */
         .bug-detail-group {
             display: flex;
             flex-direction: column;
-            /* Stack label and value vertically */
             flex: 1 1 calc(50% - 10px);
-            /* Two columns, allowing wrap */
             min-width: 280px;
-            /* Minimum width for details */
             padding-right: 15px;
-            /* Space from right side */
         }
 
         .bug-detail-group:last-of-type {
             padding-right: 0;
-            /* No padding on the last item */
         }
 
         .bug-detail-group p {
             margin: 5px 0;
-            /* Adjust spacing */
             color: #e0e0e0;
-            /* Lighter text for details */
             font-size: 0.95em;
         }
 
         .bug-detail-group strong {
             color: #f0f0f0;
-            /* Slightly brighter for labels */
             display: inline-block;
-            /* Make strong a block to align */
             min-width: 100px;
-            /* Ensure labels have some space */
             margin-right: 10px;
             font-weight: 600;
         }
 
-        /* Styling for image within bug card */
         .bug-card img {
             max-width: 100%;
             height: auto;
@@ -119,15 +93,11 @@
             margin-bottom: 15px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             display: block;
-            /* Ensures image takes its own line */
             width: 100%;
-            /* Take full width within its flex container */
         }
 
-        /* Solution/Keypoints/Feedback sections */
         .solution-section {
             width: 100%;
-            /* These sections take full width */
             margin-top: 15px;
             display: flex;
             flex-direction: column;
@@ -139,7 +109,6 @@
             color: #f0f0f0;
             margin-bottom: 5px;
             display: block;
-            /* Make label a block for proper spacing */
         }
 
         .solution-section textarea {
@@ -153,13 +122,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 0.95em;
             resize: vertical;
-            /* Allow vertical resizing */
         }
 
         .solution-section button {
             padding: 12px 25px;
             background-color: #28a745;
-            /* Green for submit */
             color: white;
             border: none;
             border-radius: 5px;
@@ -167,28 +134,23 @@
             font-size: 1.1em;
             transition: background-color 0.3s ease;
             align-self: flex-start;
-            /* Align button to start within its flex container */
         }
 
         .solution-section button:hover {
             background-color: #218838;
         }
 
-        /* Horizontal rule for separation */
         .bug-card hr {
             border: 0;
             height: 1px;
             background: rgba(255, 255, 255, 0.1);
             margin: 20px 0;
             width: 100%;
-            /* Take full width */
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .bug-detail-group {
                 flex: 1 1 100%;
-                /* Stack details vertically on smaller screens */
                 padding-right: 0;
             }
         }
@@ -245,7 +207,6 @@
         const dashboardContainer = document.getElementById('dashboardContainer');
         const developerUsernameDisplay = document.getElementById('developerUsernameDisplay');
 
-        // Function to check authentication and show dashboard or login
         function checkAuthAndShowDashboard() {
             const storedDeveloper = localStorage.getItem('loggedInDeveloper');
             if (storedDeveloper) {
@@ -307,23 +268,20 @@
             e.preventDefault();
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-            const domain = document.getElementById('domain').value; // Get domain from the form
+            const domain = document.getElementById('domain').value; 
 
             try {
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    // Make sure you send the 'domain' in the login request if it's relevant for developer login validation on the backend
                     body: JSON.stringify({ username, password, role: 'developer', domain })
                 });
                 const data = await res.json();
 
-                // Check for success: `data.success` AND `data.user` AND correct role
                 if (res.ok && data.success && data.user && data.user.role.toLowerCase() === 'developer') {
-                    // Store the entire user object including username, role, and domain
                     localStorage.setItem('loggedInDeveloper', JSON.stringify(data.user));
                     checkAuthAndShowDashboard();
-                    document.getElementById('loginError').textContent = ''; // Clear any previous errors
+                    document.getElementById('loginError').textContent = ''; 
                 } else {
                     document.getElementById('loginError').textContent = data.message || 'Invalid credentials or not a developer account.';
                 }
@@ -413,7 +371,7 @@
 
                 if (res.ok) {
                     alert('Solution submitted!');
-                    fetchAssignedBugs(); // Refresh bug list
+                    fetchAssignedBugs(); 
                 } else {
                     const data = await res.json();
                     alert(data.message || 'Failed to submit solution');

@@ -18,7 +18,7 @@
         }
 
         .history-container {
-            max-width: 1400px; /* Increased max-width for more overall space */
+            max-width: 1400px; 
             margin: 100px auto 50px auto;
             background: rgba(255, 255, 255, 0.08);
             padding: 30px;
@@ -86,15 +86,14 @@
             cursor: pointer;
         }
 
-        /* Adjusted column widths for better flow */
         table th:nth-child(1),
         table td:nth-child(1) {
-            width: 12%; /* Title can be slightly narrower */
+            width: 12%; 
         }
 
         table th:nth-child(2),
         table td:nth-child(2) {
-            width: 22%; /* Description can be flexible */
+            width: 22%;
         }
 
         table th:nth-child(3),
@@ -129,7 +128,7 @@
 
         table th:nth-child(8),
         table td:nth-child(8) {
-            width: 24%; /* Allocate more space for Solution Code */
+            width: 24%;
         }
 
         .image-thumb {
@@ -145,37 +144,36 @@
             background: #111;
             padding: 8px;
             border-radius: 4px;
-            overflow-x: auto; /* Keep horizontal scroll for very long lines */
-            white-space: pre-wrap; /* Wrap long lines */
-            word-break: break-word; /* Break words to prevent overflow */
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-word;
             font-family: 'Consolas', 'Monaco', monospace;
             font-size: 0.9em;
             color: #c0c0c0;
             border: 1px solid #333;
-            max-height: 150px; /* Limit initial height */
+            max-height: 150px;
             position: relative;
-            overflow: hidden; /* Hide overflow to apply fade effect */
+            overflow: hidden;
             transition: max-height 0.3s ease-in-out;
         }
 
-        /* Fade effect for long code blocks */
         pre::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 30px; /* Height of the fade effect */
+            height: 30px;
             background: linear-gradient(to top, #111, transparent);
-            pointer-events: none; /* Allows clicking on content behind the fade */
+            pointer-events: none;
         }
 
         pre.expanded {
-            max-height: none; /* Expand fully when toggled */
+            max-height: none;
         }
 
         pre.expanded::after {
-            display: none; /* Hide fade effect when expanded */
+            display: none;
         }
 
         .toggle-code-btn {
@@ -186,9 +184,9 @@
             border-radius: 5px;
             cursor: pointer;
             margin-top: 5px;
-            display: block; /* Make it a block element */
-            width: fit-content; /* Fit content width */
-            margin-left: auto; /* Center or align to right */
+            display: block;
+            width: fit-content;
+            margin-left: auto;
             margin-right: auto;
         }
 
@@ -264,7 +262,7 @@
             }
 
             table td:nth-child(5)::before {
-                content: "Created By:"; /* This is the label for Team Lead's name */
+                content: "Created By:";
             }
 
             table td:nth-child(6)::before {
@@ -325,14 +323,12 @@
         async function fetchHistory() {
             try {
                 const res = await fetch('/api/bugHistory');
-                // Check if the response is OK (status 200-299)
                 if (!res.ok) {
-                    // Handle non-OK responses, e.g., 404 Not Found, 500 Internal Server Error
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 const bugs = await res.json();
                 const tableBody = document.getElementById('historyTableBody');
-                tableBody.innerHTML = ''; // Clear existing content
+                tableBody.innerHTML = '';
 
                 if (bugs.length === 0) {
                     tableBody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 20px;">No bug history available.</td></tr>';
@@ -343,7 +339,6 @@
                 bugs.forEach(bug => {
                     const row = document.createElement('tr');
 
-                    // If bug.image is a base64 string or a direct URL
                     const imageHTML = bug.image ?
                         `<img src="${bug.image}" alt="Bug Image" class="image-thumb">` :
                         'No Image';
@@ -367,7 +362,6 @@
                     tableBody.appendChild(row);
                 });
 
-                // Add event listeners for the toggle buttons after rendering
                 document.querySelectorAll('.toggle-code-btn').forEach(button => {
                     button.addEventListener('click', function() {
                         const preElement = this.previousElementSibling;

@@ -7,7 +7,6 @@ router.post('/register', async (req, res) => {
   const { username, email, password, phone, age, experience, role, domain } = req.body;
 
   try {
-    // Check for existing username or email
     const existingUser = await StaffMember.findOne({
       $or: [{ username }, { email }]
     });
@@ -15,10 +14,8 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Username or Email already exists' });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
     const newUser = new StaffMember({
       username,
       email,

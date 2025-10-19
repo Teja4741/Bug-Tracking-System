@@ -5,11 +5,9 @@
     <title>Manager Dashboard</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-        /* Extra spacing between each section/table */
         .manager-section {
             margin-bottom: 3rem;
         }
-        /* Adjust login form size similar to developer login */
         #loginSection {
             max-width: 500px;
             margin: 50px auto;
@@ -47,19 +45,18 @@
             transition: background-color 0.3s ease;
         }
         #loginSection form button:hover {
-            background-color: #4a9ecf; /* Darker blue on hover */
+            background-color: #4a9ecf;
         }
 
-        /* Styling for table captions */
         .manager-table caption {
-            font-size: 1.2em; /* Slightly larger text */
+            font-size: 1.2em;
             font-weight: bold;
-            margin-bottom: 10px; /* Space below caption */
-            color: #5bc0de; /* Match theme color */
-            text-align: left; /* Align caption to the left */
-            padding-bottom: 5px; /* Padding below text */
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle line */
-            margin-top: 20px; /* Space above caption */
+            margin-bottom: 10px;
+            color: #5bc0de;
+            text-align: left;
+            padding-bottom: 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
         }
     </style>
 </head>
@@ -102,7 +99,8 @@
 
             <section>
                 <h2>Team Leads</h2>
-                <button id="deleteAllStaffBtn" style="margin-bottom: 10px; background-color: #d9534f; color: white; border: none; padding: 8px 12px; cursor: pointer;">Delete All Staff</button>
+                <button id="deleteAllStaffBtn" style="margin-bottom: 10px; background-color: #d9534f; color: white; border: none; padding: 8px 12px; cursor: pointer;">Delete Team Leads and Developers</button>
+                <button id="deleteAllManagersBtn" style="margin-bottom: 10px; background-color: #d9534f; color: white; border: none; padding: 8px 12px; cursor: pointer;">Delete All Managers</button>
                 <table class="manager-table">
                     <caption>Current Team Leads Information</caption>
                     <thead>
@@ -162,7 +160,6 @@
         const dashboardSection = document.getElementById('dashboardSection');
         const managerUsernameDisplay = document.getElementById('managerUsernameDisplay');
 
-        // Function to check authentication and show dashboard or login
         function checkAuthAndShowDashboard() {
             const storedManager = localStorage.getItem('loggedInManager');
             if (storedManager) {
@@ -170,13 +167,13 @@
                     const manager = JSON.parse(storedManager);
                     loginSection.style.display = 'none';
                     dashboardSection.style.display = 'block';
-                    managerUsernameDisplay.textContent = manager.username; // Display manager's username
-                    fetchTeamLeads(); // This will now call the CORRECTED function below
+                    managerUsernameDisplay.textContent = manager.username;
+                    fetchTeamLeads();
                     fetchDevelopers();
                     fetchBugs();
                 } catch (e) {
                     console.error('Error parsing stored manager data:', e);
-                    localStorage.removeItem('loggedInManager'); // Clear corrupted data
+                    localStorage.removeItem('loggedInManager');
                     loginSection.style.display = 'block';
                     dashboardSection.style.display = 'none';
                 }
@@ -197,7 +194,7 @@
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, role: 'manager' }) // Include role in login request
+                    body: JSON.stringify({ username, password, role: 'manager' })
                 });
                 const data = await res.json();
 
@@ -222,22 +219,19 @@
             document.getElementById('loginError').textContent = '';
         });
 
-        // UPDATED: fetchTeamLeads function to use the new endpoint and display stats
         async function fetchTeamLeads() {
             try {
-                // *** IMPORTANT CHANGE HERE: Calling the new endpoint ***
                 const res = await fetch('/api/teamleads-with-stats');
-                if (!res.ok) { // Basic error handling for non-2xx responses
+                if (!res.ok) {
                     const errorData = await res.json();
                     throw new Error(errorData.message || 'Failed to fetch team leads with stats');
                 }
-                const data = await res.json(); // This 'data' will now contain bugsAssignedCount
+                const data = await res.json();
 
                 const tbody = document.getElementById('teamLeadTableBody');
-                tbody.innerHTML = ''; // Clear existing rows
+                tbody.innerHTML = '';
 
                 if (data.length === 0) {
-                    // Updated colspan to 6 for the new 'Bugs Assigned' column
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No Team Leads found.</td></tr>';
                     return;
                 }
@@ -257,23 +251,21 @@
             } catch (err) {
                 console.error('Error fetching team leads:', err);
                 const tbody = document.getElementById('teamLeadTableBody');
-                // Updated colspan to 6 for the new 'Bugs Assigned' column
                 tbody.innerHTML = `<tr><td colspan="6" style="color: red; text-align: center;">Error loading team leads: ${err.message || 'Unknown error'}</td></tr>`;
             }
         }
 
-        // UPDATED fetchDevelopers function to use the new endpoint and display stats
         async function fetchDevelopers() {
             try {
                 const res = await fetch('/api/developers-with-stats');
-                if (!res.ok) { // Basic error handling for non-2xx responses
+                if (!res.ok) {
                     const errorData = await res.json();
                     throw new Error(errorData.message || 'Failed to fetch developers with stats');
                 }
-                const data = await res.json(); // This 'data' will now contain assignedBugsCount and solvedBugsCount
+                const data = await res.json();
 
                 const tbody = document.getElementById('developerTableBody');
-                tbody.innerHTML = ''; // Clear existing rows
+                tbody.innerHTML = '';
 
                 if (data.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No Developers found.</td></tr>';
@@ -305,7 +297,7 @@
         function fetchBugs() {
             fetch('/api/bugs')
                 .then(res => {
-                    if (!res.ok) { // Basic error handling for non-2xx responses
+                    if (!res.ok) {
                         return res.json().then(err => Promise.reject(err.message || 'Failed to fetch bugs'));
                     }
                     return res.json();
@@ -337,20 +329,53 @@
         }
 
         document.getElementById('deleteAllStaffBtn').addEventListener('click', () => {
-            if (confirm('Are you sure you want to delete all staff members? This action cannot be undone.')) {
+            if (confirm('Are you sure you want to delete all team leads and developers? This action cannot be undone.')) {
                 fetch('/api/staff', { method: 'DELETE' })
                     .then(res => {
                         if (!res.ok) {
-                            return res.json().then(err => Promise.reject(err.message || 'Failed to delete staff members'));
+                            return res.json().then(err => Promise.reject(err.message || 'Failed to delete team leads and developers'));
                         }
                         return res.json();
                     })
                     .then(data => {
                         alert(data.message);
-                        fetchTeamLeads(); // Re-fetch team leads to update counts after deletion
-                        fetchDevelopers(); // Re-fetch developers to update counts after deletion
+                        fetchTeamLeads();
+                        fetchDevelopers();
                     })
-                    .catch(err => alert('Failed to delete staff members: ' + err));
+                    .catch(err => alert('Failed to delete team leads and developers: ' + err));
+            }
+        });
+
+        document.getElementById('deleteAllManagersBtn').addEventListener('click', () => {
+            if (confirm('Are you sure you want to delete all managers? This will log you out. This action cannot be undone.')) {
+                fetch('/api/managers', { method: 'DELETE' })
+                    .then(async res => {
+                        if (!res.ok) {
+                            let errorMessage = 'Failed to delete managers';
+                            const contentType = res.headers.get("content-type");
+                            if (contentType && contentType.indexOf("application/json") !== -1) {
+                                try {
+                                    const errData = await res.json();
+                                    errorMessage = errData.message || errorMessage;
+                                } catch (e) {
+                                    console.error('Failed to parse error JSON:', e);
+                                }
+                            } else {
+                                console.error('Server returned non-JSON error response (likely HTML).');
+                            }
+                            return Promise.reject(errorMessage); 
+                        }
+                        return res.json(); 
+                    })
+                    .then(data => {
+                        alert(data.message);
+                        localStorage.removeItem('loggedInManager');
+                        loginSection.style.display = 'block';
+                        dashboardSection.style.display = 'none';
+                        document.getElementById('loginForm').reset();
+                        document.getElementById('loginError').textContent = '';
+                    })
+                    .catch(err => alert('Failed to delete managers: ' + err));
             }
         });
 
@@ -366,8 +391,8 @@
                     .then(data => {
                         alert(data.message);
                         fetchBugs();
-                        fetchDevelopers(); // Re-fetch developers to update counts after deletion
-                        fetchTeamLeads(); // Re-fetch team leads to update counts after deletion
+                        fetchDevelopers();
+                        fetchTeamLeads();
                     })
                     .catch(err => alert('Failed to delete bugs: ' + err));
             }

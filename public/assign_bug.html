@@ -54,7 +54,7 @@
       const language = document.getElementById('language').value;
       const assignedTo = document.getElementById('assignedTo').value;
       const bugImage = document.getElementById('bugImage').files[0];
-      const createdBy = localStorage.getItem('loggedInUsername') || 'teamlead'; // fallback
+      const createdBy = localStorage.getItem('loggedInUsername') || 'teamlead'; 
 
       const formData = new FormData();
       formData.append('title', title);

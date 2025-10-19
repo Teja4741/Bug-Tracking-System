@@ -3,7 +3,6 @@ const bcrypt = require('bcrypt');
 const router = express.Router();
 const StaffMember = require('../models/StaffMember');
 
-// Login route for all roles (manager, developer, teamlead)
 router.post('/login', async (req, res) => {
   const { username, password, role } = req.body;
 

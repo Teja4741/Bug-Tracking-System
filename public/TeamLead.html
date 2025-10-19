@@ -62,11 +62,10 @@
 
         const data = await res.json();
 
-        console.log('Login response role:', data.user.role);  // Debug log
+        console.log('Login response role:', data.user.role); 
 
         if (res.ok && data.success && data.user.role === 'teamlead') {
-          // *** This is the line that was missing and needs to be added ***
-          localStorage.setItem('loggedInUsername', data.user.username); // Store the logged-in Team Lead's username
+          localStorage.setItem('loggedInUsername', data.user.username); 
           window.location.href = 'assign_bug.html';
         } else {
           alert(data.message || 'Access denied. Only Team Leads are allowed.');

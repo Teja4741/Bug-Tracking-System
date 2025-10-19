@@ -1,4 +1,3 @@
-// ---------------------------------------
 
 const express = require('express');
 const router = express.Router();
@@ -11,7 +10,6 @@ const StaffMember = require('../models/StaffMember');
 const Bug = require('../models/Bug');
 
 
-// Setup multer for image upload
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = path.join(__dirname, '../../public/uploads');
@@ -27,17 +25,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// ---------------------------------------
-// LOGIN
-// ---------------------------------------
 router.post('/login', async (req, res) => {
   const { username, password, role, domain } = req.body;
 
   try {
-    // Read data from data.json
     const data = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
 
-    // Find user by username and role
     const user = data.find(u => u.username === username && u.role === role);
     console.log('User found:', user);
     if (!user) {
@@ -52,7 +45,6 @@ router.post('/login', async (req, res) => {
       }
     }
 
-    // Compare passwords as plain text (no hashing)
     if (password !== user.password) {
       console.log('Password mismatch');
       return res.status(401).json({ success: false, message: 'Invalid username, role, or password' });
@@ -75,15 +67,10 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// GET ALL STAFF (username, role, domain)
-// ---------------------------------------
 router.get('/staff', async (req, res) => {
   try {
-    // Read data from data.json
     const data = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
 
-    // Map to only required fields
     const staffList = data.map(user => ({
       username: user.username,
       email: user.email,
@@ -101,9 +88,6 @@ router.get('/staff', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// GET TEAM LEADS
-// ---------------------------------------
 router.get('/teamleads', async (req, res) => {
   try {
     const leads = await StaffMember.find({ role: 'teamlead' });
@@ -114,9 +98,6 @@ router.get('/teamleads', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// GET DEVELOPERS
-// ---------------------------------------
 router.get('/developers', async (req, res) => {
   try {
     const devs = await StaffMember.find({ role: 'developer' });
@@ -127,9 +108,6 @@ router.get('/developers', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// CREATE NEW BUG with image upload
-// ---------------------------------------
 router.post('/bugs', upload.single('image'), async (req, res) => {
   try {
     const { title, description, language, assignedTo, createdBy } = req.body;
@@ -168,9 +146,6 @@ router.post('/bugs', upload.single('image'), async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// GET ALL BUGS
-// ---------------------------------------
 router.get('/bugs', async (req, res) => {
   try {
     const bugs = await Bug.find();
@@ -181,9 +156,6 @@ router.get('/bugs', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// UPDATE BUG
-// ---------------------------------------
 router.put('/bugs/:id', async (req, res) => {
   try {
     const updated = await Bug.findByIdAndUpdate(req.params.id, req.body, { new: true });
@@ -197,9 +169,6 @@ router.put('/bugs/:id', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// SUBMIT SOLUTION for bug
-// ---------------------------------------
 router.put('/bugs/solution/:id', async (req, res) => {
   try {
     const { solutionCode, status } = req.body;
@@ -224,22 +193,26 @@ router.put('/bugs/solution/:id', async (req, res) => {
   }
 });
 
-// ---------------------------------------
-// DELETE ALL STAFF
-// ---------------------------------------
 router.delete('/staff', async (req, res) => {
   try {
-    await StaffMember.deleteMany({});
-    res.json({ success: true, message: 'All staff members deleted successfully.' });
+    await StaffMember.deleteMany({ role: { $in: ['developer', 'teamlead'] } });
+    res.json({ success: true, message: 'All team leads and developers deleted successfully.' });
   } catch (err) {
     console.error('Delete staff error:', err);
-    res.status(500).json({ success: false, message: 'Failed to delete staff members.' });
+    res.status(500).json({ success: false, message: 'Failed to delete team leads and developers.' });
   }
 });
 
-// ---------------------------------------
-// DELETE ALL BUGS
-// ---------------------------------------
+router.delete('/managers', async (req, res) => {
+  try {
+    await StaffMember.deleteMany({ role: 'manager' });
+    res.json({ success: true, message: 'All managers deleted successfully.' });
+  } catch (err) {
+    console.error('Delete managers error:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete managers.' });
+  }
+});
+
 router.delete('/bugs', async (req, res) => {
   try {
     await Bug.deleteMany({});

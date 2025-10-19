@@ -5,7 +5,6 @@ const path = require('path');
 const Bug = require('../models/Bug');
 const StaffMember = require('../models/StaffMember');
 
-// Multer setup for image upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'public/uploads/');
@@ -17,14 +16,12 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Create new bug (assigned by TeamLead) with image upload
 router.post('/bugs', upload.single('image'), async (req, res) => {
     try {
         console.log('Received bug assignment request:', req.body);
         if (req.file) {
             console.log('Received file:', req.file);
         }
-        // Assuming req.body already contains 'createdBy' (the Team Lead's username)
         const bugData = req.body;
         if (req.file) {
             bugData.image = '/uploads/' + req.file.filename;
@@ -38,17 +35,15 @@ router.post('/bugs', upload.single('image'), async (req, res) => {
     }
 });
 
-// Get bugs assigned to specific developer
 router.get('/bugs/assigned/:username', async (req, res) => {
     try {
-        const bugs = await Bug.find({ assignedTo: req.params.username }).sort({ createdAt: -1 }); // newest first
+        const bugs = await Bug.find({ assignedTo: req.params.username }).sort({ createdAt: -1 });
         res.json(bugs);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
-// Submit/Update solution (Assuming solutionCode, keyPoints, feedback fields can be sent in req.body)
 router.put('/bugs/solution/:id', async (req, res) => {
     try {
         const bug = await Bug.findByIdAndUpdate(
@@ -70,7 +65,6 @@ router.put('/bugs/solution/:id', async (req, res) => {
     }
 });
 
-// Get all team leads (original endpoint - mostly redundant now that we have -with-stats)
 router.get('/teamleads', async (req, res) => {
     try {
         const teamleads = await StaffMember.find({ role: 'teamlead' });
@@ -80,18 +74,16 @@ router.get('/teamleads', async (req, res) => {
     }
 });
 
-// NEW ROUTE: Get all team leads with assigned bug counts (for manager dashboard)
 router.get('/teamleads-with-stats', async (req, res) => {
     try {
-        const teamleads = await StaffMember.find({ role: 'teamlead' }).lean(); // .lean() for plain JS objects
+        const teamleads = await StaffMember.find({ role: 'teamlead' }).lean();
 
         const teamleadStats = await Promise.all(teamleads.map(async (tl) => {
-            // Use 'createdBy' field to count bugs assigned by this Team Lead
             const assignedCount = await Bug.countDocuments({ createdBy: tl.username });
 
             return {
-                ...tl, // Spread all existing team lead fields
-                bugsAssignedCount: assignedCount // Attach the new count
+                ...tl,
+                bugsAssignedCount: assignedCount
             };
         }));
 
@@ -103,7 +95,6 @@ router.get('/teamleads-with-stats', async (req, res) => {
 });
 
 
-// Get all developers (original endpoint)
 router.get('/developers', async (req, res) => {
     try {
         const developers = await StaffMember.find({ role: 'developer' });
@@ -113,17 +104,16 @@ router.get('/developers', async (req, res) => {
     }
 });
 
-// NEW ROUTE: Get all developers with bug counts (for manager dashboard)
 router.get('/developers-with-stats', async (req, res) => {
     try {
-        const developers = await StaffMember.find({ role: 'developer' }).lean(); // .lean() for plain JS objects
+        const developers = await StaffMember.find({ role: 'developer' }).lean();
 
         const developerStats = await Promise.all(developers.map(async (dev) => {
             const assignedCount = await Bug.countDocuments({ assignedTo: dev.username });
             const solvedCount = await Bug.countDocuments({ assignedTo: dev.username, status: 'resolved' });
 
             return {
-                ...dev, // Spread all existing developer fields
+                ...dev,
                 assignedBugsCount: assignedCount,
                 solvedBugsCount: solvedCount
             };
@@ -136,7 +126,6 @@ router.get('/developers-with-stats', async (req, res) => {
     }
 });
 
-// Get all staff
 router.get('/staff', async (req, res) => {
     try {
         const staff = await StaffMember.find({});
@@ -146,7 +135,6 @@ router.get('/staff', async (req, res) => {
     }
 });
 
-// Get all bugs
 router.get('/bugs', async (req, res) => {
     try {
         const bugs = await Bug.find({}).sort({ createdAt: -1 });
@@ -156,7 +144,6 @@ router.get('/bugs', async (req, res) => {
     }
 });
 
-// Get bug history (all bugs)
 router.get('/bugHistory', async (req, res) => {
     try {
         const bugs = await Bug.find({}).sort({ createdAt: -1 });
@@ -166,7 +153,6 @@ router.get('/bugHistory', async (req, res) => {
     }
 });
 
-// Delete all staff
 router.delete('/staff', async (req, res) => {
     try {
         await StaffMember.deleteMany({});
@@ -176,7 +162,6 @@ router.delete('/staff', async (req, res) => {
     }
 });
 
-// Delete all bugs
 router.delete('/bugs', async (req, res) => {
     try {
         await Bug.deleteMany({});

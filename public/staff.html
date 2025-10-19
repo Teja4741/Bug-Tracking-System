@@ -5,7 +5,6 @@
     <title>Our Team</title>
     <link rel="stylesheet" href="style.css" />
     <style>
-        /* General body styling for background and text color */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #1a1a1a;
@@ -15,18 +14,16 @@
             padding: 0;
         }
 
-        /* Main content container */
         main {
             padding: 40px 20px;
-            max-width: 1200px; /* Increased max-width to accommodate three columns */
-            margin: 100px auto 50px auto; /* Adjust margin-top for fixed header */
+            max-width: 1200px;
+            margin: 100px auto 50px auto;
             background: rgba(255, 255, 255, 0.08);
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             color: #fff;
         }
 
-        /* Main page heading */
         h2 {
             text-align: center;
             margin-bottom: 30px;
@@ -38,58 +35,49 @@
             padding-bottom: 15px;
         }
 
-        /* New: Container for the three main role columns */
         .role-columns-container {
-            display: flex; /* Use flexbox for horizontal layout */
-            gap: 20px; /* Space between columns */
-            flex-wrap: wrap; /* Allow columns to wrap on smaller screens */
-            justify-content: center; /* Center the columns if there's extra space */
-            margin-top: 30px; /* Space between main heading and columns */
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
         }
 
-        /* New: Styling for each role block (e.g., Managers block, Team Leads block) */
         .role-block {
-            flex: 1; /* Allow blocks to grow and shrink */
-            min-width: 300px; /* Minimum width for each column before wrapping */
-            background-color: rgba(255, 255, 255, 0.05); /* Slightly darker background than cards */
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            display: flex; /* Use flex for internal content (heading + grid) */
+            display: flex;
             flex-direction: column;
         }
 
 
-        /* Styling for the section headings (Managers, Team Leads, Developers) */
         .section-heading {
-            color: #5bc0de; /* Brighter blue for headings */
+            color: #5bc0de;
             font-size: 1.8em;
             font-weight: 600;
-            margin-top: 0; /* Remove top margin as role-block handles spacing */
+            margin-top: 0;
             margin-bottom: 20px;
             text-align: center;
-            /* background-color: rgba(91, 192, 222, 0.2); Removed, now handled by .role-block */
-            /* border-radius: 5px; Removed */
-            /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); Removed */
-            padding-bottom: 10px; /* Add padding for a subtle underline */
-            border-bottom: 1px solid rgba(91, 192, 222, 0.4); /* Subtle underline for heading */
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(91, 192, 222, 0.4);
         }
 
-        /* Container for the staff cards within each section */
         .staff-grid {
             display: grid;
-            grid-template-columns: 1fr; /* Force single column within each role block */
-            gap: 15px; /* Space between cards in a column */
+            grid-template-columns: 1fr;
+            gap: 15px;
             padding: 0;
-            /* margin-bottom: 30px; No longer needed here as .role-block holds it */
         }
 
-        /* Individual staff member card */
         .staff-card {
             background-color: rgba(255, 255, 255, 0.03);
             border: 1px solid #333;
             border-radius: 6px;
-            padding: 15px; /* Slightly reduced padding for tighter cards within column */
+            padding: 15px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
             display: flex;
@@ -104,27 +92,25 @@
             transform: translateY(-2px);
         }
 
-        /* Staff member name */
         .staff-card h3 {
             color: #5bc0de;
-            font-size: 1.3em; /* Slightly smaller font for cards in columns */
+            font-size: 1.3em;
             margin-top: 0;
-            margin-bottom: 8px; /* Reduced margin */
+            margin-bottom: 8px;
             border-bottom: 1px dashed #444;
             padding-bottom: 8px;
             width: 100%;
         }
 
-        /* Staff information details */
         .staff-info {
-            font-size: 0.95em; /* Slightly smaller font for details */
-            line-height: 1.5; /* Adjusted line height */
+            font-size: 0.95em;
+            line-height: 1.5;
             color: #bbb;
-            width: 100%; /* Ensure info block takes full width */
+            width: 100%;
         }
 
         .staff-info p {
-            margin: 6px 0; /* Reduced margin */
+            margin: 6px 0;
             display: block;
             width: 100%;
         }
@@ -133,35 +119,32 @@
             display: block;
             color: #e0e0e0;
             font-weight: 500;
-            margin-bottom: 3px; /* Smaller space */
+            margin-bottom: 3px;
         }
 
         .staff-info p span {
             font-weight: 400;
         }
 
-        /* Placeholder for no staff found or error */
         .no-members-message {
             text-align: center;
-            padding: 15px; /* Slightly less padding */
-            font-size: 1em; /* Adjusted font size */
+            padding: 15px;
+            font-size: 1em;
             color: #aaa;
         }
         .role-block .no-members-message {
-             /* Ensure no members message aligns properly within block */
-            flex-grow: 1; /* Make it take available space if no cards */
+            flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
 
-        /* Responsive adjustments for smaller screens */
         @media (max-width: 768px) {
             main {
                 margin: 80px 15px 30px 15px;
                 padding: 20px;
-                max-width: 100%; /* Allow main to fill available width */
+                max-width: 100%;
             }
 
             h2 {
@@ -170,13 +153,13 @@
             }
 
             .role-columns-container {
-                flex-direction: column; /* Stack columns vertically on small screens */
-                gap: 25px; /* More space between stacked blocks */
+                flex-direction: column;
+                gap: 25px;
             }
 
             .role-block {
-                min-width: unset; /* Remove min-width when stacking */
-                width: 100%; /* Take full width when stacked */
+                min-width: unset;
+                width: 100%;
             }
 
             .section-heading {
@@ -250,20 +233,12 @@
             const developersList = document.getElementById('developersList');
             const overallNoStaffMessage = document.getElementById('overallNoStaffMessage');
 
-            // Set initial "Loading..." messages for each section
-            // These are already set in HTML, but good to be explicit if you were clearing them
-            // managersList.innerHTML = '<p class="no-members-message">Loading Managers...</p>';
-            // teamLeadsList.innerHTML = '<p class="no-members-message">Loading Team Leads...</p>';
-            // developersList.innerHTML = '<p class="no-members-message">Loading Developers...</p>';
-
-
             try {
                 const res = await fetch('/api/staff');
                 if (!res.ok) throw new Error(`Failed to fetch staff data: ${res.statusText}`);
                 let data = await res.json();
 
                 if (data.length === 0) {
-                    // If no data, show overall message and hide individual sections' loading
                     overallNoStaffMessage.style.display = 'block';
                     managersList.innerHTML = '<p class="no-members-message">No Managers found.</p>';
                     teamLeadsList.innerHTML = '<p class="no-members-message">No Team Leads found.</p>';
@@ -271,31 +246,28 @@
                     return;
                 }
 
-                // Clear "Loading..." messages once data is received
                 managersList.innerHTML = '';
                 teamLeadsList.innerHTML = '';
                 developersList.innerHTML = '';
 
-                // Sort the data by role (custom order), then by username
                 data.sort((a, b) => {
                     const roleOrder = {
                         'manager': 1,
                         'teamlead': 2,
                         'developer': 3,
-                        'staff': 4 // Include other roles if applicable
+                        'staff': 4
                     };
 
                     const roleA = a.role ? a.role.toLowerCase() : '';
                     const roleB = b.role ? b.role.toLowerCase() : '';
 
-                    const orderA = roleOrder[roleA] || 99; // Unknown roles go last
+                    const orderA = roleOrder[roleA] || 99;
                     const orderB = roleOrder[roleB] || 99;
 
                     if (orderA !== orderB) {
                         return orderA - orderB;
                     }
 
-                    // If roles are the same, sort by username
                     const usernameA = a.username ? a.username.toLowerCase() : '';
                     const usernameB = b.username ? b.username.toLowerCase() : '';
                     if (usernameA < usernameB) {
@@ -340,7 +312,6 @@
                     }
                 });
 
-                // If no members found for a specific role, add back the "No X found" message
                 if (!managersFound) {
                     managersList.innerHTML = '<p class="no-members-message">No Managers found.</p>';
                 }
@@ -353,11 +324,10 @@
 
             } catch (err) {
                 console.error('Error loading team data:', err);
-                // Display error messages within each section if fetching fails
                 managersList.innerHTML = '<p class="no-members-message" style="color: #e74c3c;">Failed to load data.</p>';
                 teamLeadsList.innerHTML = '<p class="no-members-message" style="color: #e74c3c;">Failed to load data.</p>';
                 developersList.innerHTML = '<p class="no-members-message" style="color: #e74c3c;">Failed to load data.</p>';
-                overallNoStaffMessage.style.display = 'none'; // Hide if specific errors are shown
+                overallNoStaffMessage.style.display = 'none';
             }
         });
     </script>
