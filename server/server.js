@@ -1,4 +1,4 @@
-require('dotenv').config(); // <-- Loads .env at the top
+require('dotenv').config(); // <-- Loads .env at the very top
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
@@ -18,12 +18,15 @@ if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
+// Serve static files from public directory
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// Serve root page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
+// Import your API routes
 const bugRoutes = require('./routes/temp');
 const registerRoutes = require('./routes/register');
 const authRoutes = require('./routes/auth');
@@ -32,15 +35,21 @@ app.use('/api', bugRoutes);
 app.use('/api', registerRoutes);
 app.use('/api', authRoutes);
 
-// Use Atlas connection string from environment variable
+// MongoDB Atlas connection string
 const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bugtracker';
 console.log('MongoDB URI:', mongoUrl);
+
 mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
 .then(() => console.log('MongoDB connected'))
 .catch((err) => console.error('MongoDB connection error:', err));
+
+// Fallback route for SPA or direct navigations on pages
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
