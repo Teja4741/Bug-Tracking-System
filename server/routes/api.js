@@ -171,14 +171,14 @@ router.put('/bugs/:id', async (req, res) => {
 
 router.put('/bugs/solution/:id', async (req, res) => {
   try {
-    const { solutionCode, status } = req.body;
+    const { solutionCode, keyPoints, feedback, status } = req.body;
     if (!solutionCode || !status) {
       return res.status(400).json({ success: false, message: 'Solution code and status are required' });
     }
 
     const updated = await Bug.findByIdAndUpdate(
       req.params.id,
-      { solutionCode, status },
+      { solutionCode, keyPoints, feedback, status },
       { new: true }
     );
 
@@ -213,6 +213,16 @@ router.delete('/managers', async (req, res) => {
   }
 });
 
+router.get('/bugs/assigned/:username', async (req, res) => {
+  try {
+    const bugs = await Bug.find({ assignedTo: req.params.username });
+    res.json(bugs);
+  } catch (err) {
+    console.error('Fetch assigned bugs error:', err);
+    res.status(500).json({ success: false, message: 'Failed to fetch assigned bugs' });
+  }
+});
+
 router.delete('/bugs', async (req, res) => {
   try {
     await Bug.deleteMany({});
@@ -222,7 +232,5 @@ router.delete('/bugs', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to delete bugs.' });
   }
 });
-
-module.exports = router;
 
 module.exports = router;

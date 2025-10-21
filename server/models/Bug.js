@@ -8,6 +8,8 @@ const bugSchema = new mongoose.Schema({
   assignedTo: { type: String, required: true },
   createdBy: { type: String, required: true },
   solutionCode: { type: String, default: '' },
+  keyPoints: { type: String, default: '' },
+  feedback: { type: String, default: '' },
   status: {
     type: String,
     enum: ['assigned', 'in-progress', 'resolved', 'closed'],

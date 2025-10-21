@@ -7,7 +7,8 @@ const StaffMember = require('../models/StaffMember');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'public/uploads/');
+        const uploadDir = path.join(__dirname, '../../public/uploads');
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

@@ -331,7 +331,7 @@
                                 <p><strong>Date:</strong> ${createdDate}</p>
                             </div>
                         </div>
-                        ${bug.imageUrl ? `<img src="${bug.imageUrl}" alt="Bug Screenshot" />` : ''}
+                        ${bug.image ? `<img src="${bug.image}" alt="Bug Screenshot" />` : ''}
                         <div class="solution-section">
                             <label for="solution-${bug._id}">Solution Code:</label>
                             <textarea rows="8" placeholder="Enter your solution here..." id="solution-${bug._id}">${bug.solutionCode || ''}</textarea>
