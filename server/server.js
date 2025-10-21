@@ -1,3 +1,5 @@
+require('dotenv').config(); // <-- Loads .env at the top
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -30,7 +32,10 @@ app.use('/api', bugRoutes);
 app.use('/api', registerRoutes);
 app.use('/api', authRoutes);
 
-mongoose.connect('mongodb://127.0.0.1:27017/bugtracker', {
+// Use Atlas connection string from environment variable
+const mongoUrl = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/bugtracker';
+console.log('MongoDB URI:', mongoUrl);
+mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
